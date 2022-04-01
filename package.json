@@ -1,15 +1,11 @@
 {
-  "name": "converter",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
     "build:w": "cargo build --release --target x86_64-pc-windows-msvc",
     "build:l": "cargo build --release --target x86_64-unknown-linux-musl",
     "test-release": "./target/x86_64-pc-windows-msvc/release/converter.exe ./config/config.yaml ./config/config.json",
-    "test": "cargo run ./config/config.yaml ./config/config.json"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "test": "cargo run ./config/config.yaml ./config/config.json",
+    "test1": "cargo run ./config/config.yml ./config/config.json",
+    "test2": "cargo run ./config/config.json ./config/config1.yaml",
+    "test3": "cargo run ./config/config.json ./config/config1.yml"
+  }
 }
