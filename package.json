@@ -2,10 +2,10 @@
   "scripts": {
     "build:w": "cargo build --release --target x86_64-pc-windows-msvc",
     "build:l": "cargo build --release --target x86_64-unknown-linux-musl",
-    "test-release": "./target/x86_64-pc-windows-msvc/release/converter.exe ./config/config.yaml ./config/config.json",
-    "test": "cargo run ./config/config.yaml ./config/config.json",
-    "test1": "cargo run ./config/config.yml ./config/config.json",
-    "test2": "cargo run ./config/config.json ./config/config1.yaml",
-    "test3": "cargo run ./config/config.json ./config/config1.yml"
+    "test-release": "./target/x86_64-pc-windows-msvc/release/converter.exe single -i ./config/config.yaml -o ./config/config.json",
+    "test": "cargo run -- single -i ./config/config.yaml -o ./config/config.json",
+    "test1": "cargo run -- single -i ./config/config.yml -o ./config/config.json",
+    "test2": "cargo run -- single -i ./config/config.json -o ./config/config1.yaml",
+    "test3": "cargo run -- single -i ./config/tsconfig.json -o ./config/config1.yml"
   }
 }

@@ -1,0 +1,6 @@
+{
+  "buildOptions": {
+    // hello world
+    "incremental": true
+  }
+}
