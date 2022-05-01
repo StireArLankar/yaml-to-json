@@ -4,8 +4,11 @@
     "build:l": "cargo build --release --target x86_64-unknown-linux-musl",
     "test-release": "./target/x86_64-pc-windows-msvc/release/converter.exe single -i ./config/config.yaml -o ./config/config.json",
     "test": "cargo run -- single -i ./config/config.yaml -o ./config/config.json",
-    "test1": "cargo run -- single -i ./config/config.yml -o ./config/config.json",
+    "test1": "cargo run -- single -i ./config/config.yml -o ./config/config.json -p",
     "test2": "cargo run -- single -i ./config/config.json -o ./config/config1.yaml",
-    "test3": "cargo run -- single -i ./config/tsconfig.json -o ./config/config1.yml"
+    "test:json5": "cargo run -- single -i ./config/tsconfig.json -o ./config/config1.yml",
+    "test:dir1": "cargo run -- dir -r test_dir -i yaml -i yml -i json -o json -p",
+    "test:dir2": "cargo run -- dir -r test_dir -i yaml -i yml -i json -o yaml -p",
+    "test:dir3": "cargo run -- dir -r test_dir -i yaml -i yml -i json -o yml -p"
   }
 }

@@ -1,10 +1,10 @@
 {
-    "age": 37,
-    "hobbies": [
-        "programming",
-        "reading",
-        "cooking",
-        "gaming"
-    ],
-    "name": "Bob"
+  "age": 37,
+  "hobbies": [
+    "programming",
+    "reading",
+    "cooking",
+    "gaming"
+  ],
+  "name": "Bob"
 }
