@@ -1,7 +1,6 @@
 use clap::{ArgEnum, Parser, Subcommand};
 use itertools::Itertools;
 use json5;
-use regex::Regex;
 use std::fs::{create_dir_all, File};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -10,6 +9,8 @@ use wax::Glob;
 extern crate serde;
 extern crate serde_json;
 extern crate serde_yaml;
+
+pub mod indent;
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -26,8 +27,8 @@ struct Args {
     #[clap(global = true, long, default_value_t = 2)]
     indent: usize,
 
-    #[clap(global = true, long, arg_enum, default_value_t = IndentStyle::Space)]
-    indent_style: IndentStyle,
+    #[clap(global = true, long, arg_enum, default_value_t = indent::IndentStyle::Space)]
+    indent_style: indent::IndentStyle,
 }
 
 #[derive(Subcommand, Debug)]
@@ -72,12 +73,6 @@ enum Extensions {
     Yaml,
     Yml,
     Json,
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum)]
-enum IndentStyle {
-    Space,
-    Tab,
 }
 
 fn valid_ext(s: &str) -> Result<String, String> {
@@ -145,7 +140,7 @@ fn extension_to_string(x: &Extensions) -> String {
     }
 }
 
-fn convert_file(_: IndentStyle, input: &str, output: &str, indent: usize) {
+fn convert_file(style: indent::IndentStyle, input: &str, output: &str, indent: usize) {
     let mut input_file = File::open(&input).unwrap();
     let mut input_data = String::new();
 
@@ -178,11 +173,7 @@ fn convert_file(_: IndentStyle, input: &str, output: &str, indent: usize) {
         t => panic!("Unsupported extension {:?}", t),
     };
 
-    if indent != 2 {
-        let rg = Regex::new(r"\n(\s*)").unwrap();
-        let indent_str = format!("\n{}", "$1".repeat(indent / 2));
-        output_data = rg.replace_all(&output_data, indent_str).to_string();
-    }
+    output_data = indent::format_file(&output_data, indent, style);
 
     let new_path = Path::new(&output);
     let prefix = new_path.parent().unwrap();
@@ -191,7 +182,7 @@ fn convert_file(_: IndentStyle, input: &str, output: &str, indent: usize) {
     output_file.write_all(output_data.as_bytes()).unwrap();
 }
 
-// function that takes file extension and root directory
+// function that takes file extensions and root directory
 // and returns a list of files by glob in the directory
 // with the given extension
 fn get_files(ext: &str, root: &str) -> Vec<PathBuf> {
@@ -208,35 +199,4 @@ fn get_files(ext: &str, root: &str) -> Vec<PathBuf> {
     }
 
     files
-}
-
-// function to replace spaces at start of string with tabs
-// todo - make this work
-#[allow(dead_code)]
-fn replace_spaces_with_tabs(s: &str) -> String {
-    let rg = Regex::new(r"^(\s*)").unwrap();
-
-    let mut item = rg.split(s);
-    let temp = item.next();
-
-    let start = match temp {
-        Some(int) => Regex::new(r"\s")
-            .unwrap()
-            .replace_all(int, r"\t\t\t")
-            .to_string(),
-        None => "".to_owned(),
-    };
-
-    format!("{}{}", start, "".to_owned())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn basic_tests() {
-        // assert_eq!(replace_spaces_with_tabs(" hello world",), "  hello world");
-        assert_eq!(replace_spaces_with_tabs(" hello world",), "  hello world");
-    }
 }
