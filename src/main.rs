@@ -1,6 +1,7 @@
 use clap::{ArgEnum, Parser, Subcommand};
 use itertools::Itertools;
 use json5;
+use serde_yaml::Value as YValue;
 use std::fs::{create_dir_all, File};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -156,9 +157,30 @@ fn convert_file(style: indent::IndentStyle, input: &str, output: &str, indent: u
             serde_json::to_string_pretty(&value).unwrap()
         }
         ("json", "yaml" | "yml") => {
-            let value: serde_yaml::Value = json5::from_str(&input_data).unwrap();
+            let value: YValue = json5::from_str(&input_data).unwrap();
 
-            serde_yaml::to_string(&value).unwrap()
+            let mut schema = String::from("");
+
+            // if json has $schema field, then we will add it as a comment for yaml-language-server
+            if let YValue::Mapping(object) = &value {
+                object.into_iter().find(|x| match x {
+                    // if key is not $schema, then skip
+                    (YValue::String(key), _) if key != "$schema" => false,
+                    // if here, than key is $schema and value is a string
+                    (_, YValue::String(value)) => {
+                        schema = format!("# yaml-language-server: $schema={}", value);
+
+                        true
+                    }
+                    _ => false,
+                });
+            }
+
+            if schema.len() == 0 {
+                serde_yaml::to_string(&value).unwrap()
+            } else {
+                format!("{}\n\n{}", schema, serde_yaml::to_string(&value).unwrap())
+            }
         }
         ("yaml" | "yml", "yaml" | "yml") => {
             let value: serde_yaml::Value = serde_yaml::from_str(&input_data).unwrap();
